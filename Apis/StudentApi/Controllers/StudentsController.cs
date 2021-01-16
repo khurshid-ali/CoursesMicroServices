@@ -37,7 +37,7 @@ namespace StudentApi.Controllers
         {
             StudentService.Create(student);
 
-            return CreatedAtAction("GetStudent", new { id = student.Id.ToString() }, student);
+            return CreatedAtAction("Get", new { id = student.Id.ToString() }, student);
         }
 
         [HttpPut]

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using StudentApi.Entities;
 using StudentApi.Services;
+using StudentApi.JsonConverters;
 
 namespace StudentApi
 {
@@ -41,7 +42,10 @@ namespace StudentApi
 
             services.AddSingleton<IStudentService, StudentService>();
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(cfg =>
+                    cfg.JsonSerializerOptions.Converters.Add(new DateTimeConverter())
+                );
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StudentApi", Version = "v1" });
