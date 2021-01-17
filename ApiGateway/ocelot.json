@@ -11,7 +11,10 @@
             ],
             "UpstreamPathTemplate": "/api/courses",
             "UpstreamHttpMethod": [
-                "Get"
+                "Get",
+                "Post",
+                "Put",
+                "Delete"
             ]
         },
         {
@@ -25,7 +28,10 @@
             ],
             "UpstreamPathTemplate": "/api/students",
             "UpstreamHttpMethod": [
-                "Get"
+                "Get",
+                "Post",
+                "Put",
+                "Delete"
             ]
         }
     ],
