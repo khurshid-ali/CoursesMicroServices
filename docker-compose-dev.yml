@@ -1,5 +1,16 @@
 services:
-#MongoDB And MongoDB Express
+  #RabbitMQ
+  rabbitMq:
+    image: rabbitmq:3-management
+    hostname: my-rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+  #
+  #MongoDB And MongoDB Express
   mongoDb:
     image: mongo
     #restart: always
@@ -9,7 +20,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
-      - mongo-data:/data/db
+      - CoursesMicroservicesData:/data/db
   mongo-express:
     image: mongo-express
     #restart: always
@@ -20,4 +31,4 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_SERVER: mongoDb
 volumes:
-  mongo-data:
+  CoursesMicroservicesData:
