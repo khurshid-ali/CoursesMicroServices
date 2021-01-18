@@ -60,15 +60,15 @@ namespace DbBuilder
                 {
                     Name = "Java I",
                     Code = "CS101",
-                    Capacity = 40,
-                    Registered = 40
+                    Capacity = 2,
+                    Registered = 0
                 },
                 new CourseEntity
                 {
                     Name = "Java II",
                     Code = "CS102",
-                    Capacity = 40,
-                    Registered = 30
+                    Capacity = 2,
+                    Registered = 0
                 }
             });
             Console.WriteLine("[OK]");

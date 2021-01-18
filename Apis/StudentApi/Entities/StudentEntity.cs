@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -18,5 +19,12 @@ namespace StudentApi.Entities
 
         [BsonRepresentation(BsonType.DateTime)]
         public DateTime DateOfBirth { get; set; }
+        
+        public List<RegisteredCourse> Courses { get; init; }
+
+        public StudentEntity()
+        {
+            Courses = new List<RegisteredCourse>();
+        }
     }
 }

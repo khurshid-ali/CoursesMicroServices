@@ -40,6 +40,16 @@ namespace StudentApi.Controllers
             return CreatedAtAction("Get", new { id = student.Id.ToString() }, student);
         }
 
+        [HttpGet]
+        [Route("register/{studentId:length(24)}/{courseCode}")]
+        public ActionResult<StudentEntity> RegisterCourse(string studentId, string courseCode)
+        {
+            var student = StudentService.Get(studentId);
+            if (student == null) return NotFound();
+
+            return student;
+        }
+
         [HttpPut]
         public ActionResult<StudentEntity> Update(string id, StudentEntity studentIn)
         {

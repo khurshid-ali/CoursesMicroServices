@@ -33,6 +33,23 @@
                 "Put",
                 "Delete"
             ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/students/register/{studentId:length(24)}/{courseCode}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5005
+                }
+            ],
+            "UpstreamPathTemplate": "/api/students/register/{studentId:length(24)}/{courseCode}",
+            "UpstreamHttpMethod": [
+                "Get",
+                "Post",
+                "Put",
+                "Delete"
+            ]
         }
     ],
     "GlobalConfiguration": {
