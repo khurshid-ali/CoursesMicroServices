@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using StudentApi.BgWorkers;
 using StudentApi.Entities;
 using StudentApi.Services;
 using StudentApi.JsonConverters;
@@ -40,6 +41,12 @@ namespace StudentApi
                 sp.GetRequiredService<IOptions<StudentDatabaseSettings>>().Value
             );
 
+            services.Configure<RabbitMqConfiguration>(
+                Configuration.GetSection(nameof(RabbitMqConfiguration))
+            );
+            services.AddSingleton<IRabbitMqConfiguration>(sp =>
+                sp.GetRequiredService<IOptions<RabbitMqConfiguration>>().Value);
+
             services.AddSingleton<IStudentService, StudentService>();
 
             services.AddControllers()
@@ -50,6 +57,8 @@ namespace StudentApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StudentApi", Version = "v1" });
             });
+
+            services.AddHostedService<StudentQueueConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

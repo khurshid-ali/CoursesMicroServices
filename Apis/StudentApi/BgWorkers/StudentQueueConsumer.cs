@@ -2,18 +2,16 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CoursesApi.Entities;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using MongoDB.Bson.Serialization.Serializers;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using StudentApi.Entities;
 
-namespace CoursesApi.BgWorkers
+namespace StudentApi.BgWorkers
 {
-    public class CoursesQueueConsumer : BackgroundService
+    public class StudentQueueConsumer : BackgroundService
     {
+        
         private readonly IRabbitMqConfiguration _rabbitMqConfig;
         private ConnectionFactory _connectionFactory;
         private IConnection _connection;
@@ -24,11 +22,9 @@ namespace CoursesApi.BgWorkers
         public string QueueName => _rabbitMqConfig.QueueName;
         public string RoutingKey => _rabbitMqConfig.RoutingKey;
         
-        
-
-        public CoursesQueueConsumer(IRabbitMqConfiguration rabbitMqConfig)
+        public StudentQueueConsumer(IRabbitMqConfiguration rabbitConfig)
         {
-            _rabbitMqConfig = rabbitMqConfig;
+            _rabbitMqConfig = rabbitConfig;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -53,15 +49,11 @@ namespace CoursesApi.BgWorkers
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            
             await base.StopAsync(cancellationToken);
-            
             _connection.Close();
-
         }
 
-
-        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (sender, e) =>
@@ -73,8 +65,6 @@ namespace CoursesApi.BgWorkers
             _channel.BasicConsume(QueueName, true, consumer);
 
             await Task.CompletedTask;
-            
         }
-        
     }
 }
