@@ -13,6 +13,7 @@ namespace CoursesApi.Services
         Task<List<CourseEntity>> GetAsync();
         Task<CourseEntity> GetAsync(string id);
         Task UpdateAsync(string id, CourseEntity courseIn);
+        Task<bool> RegisterStudentForCourse(string studentId, string studentName, string courseId);
     }
 
     public class CourseService : ICourseService
@@ -49,6 +50,29 @@ namespace CoursesApi.Services
         public async Task DeleteAsync(string id)
         {
             await _entities.DeleteOneAsync(course => course.Id == id);
+        }
+
+
+        public async Task<bool> RegisterStudentForCourse(string studentId, string studentName, string courseId)
+        {
+            var course = (await _entities.FindAsync<CourseEntity>(course => course.Id == courseId)).FirstOrDefault();
+            if (course == null)
+                return false;
+
+            var emptySpots = course.Capacity - course.Registered;
+
+            if (emptySpots > 0)
+            {
+                course.Students.Add(new RegisteredStudent
+                {
+                    Id = studentId,
+                    Name = studentName
+                });
+
+                return true;
+            }
+
+            return false;
         }
 
 

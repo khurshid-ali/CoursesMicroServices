@@ -1,8 +1,10 @@
 using System;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CoursesApi.Entities;
+using CoursesApi.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
@@ -18,6 +20,7 @@ namespace CoursesApi.BgWorkers
         private ConnectionFactory _connectionFactory;
         private IConnection _connection;
         private IModel _channel;
+        private readonly ICourseService _courseService;
 
         public string Url => _rabbitMqConfig.Url;
         public string Exchange => _rabbitMqConfig.Exchange;
@@ -26,9 +29,10 @@ namespace CoursesApi.BgWorkers
         
         
 
-        public CoursesQueueConsumer(IRabbitMqConfiguration rabbitMqConfig)
+        public CoursesQueueConsumer(IRabbitMqConfiguration rabbitMqConfig, ICourseService courseService)
         {
             _rabbitMqConfig = rabbitMqConfig;
+            _courseService = courseService;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -61,12 +65,44 @@ namespace CoursesApi.BgWorkers
         }
 
 
-        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (sender, e) =>
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.Received += async (sender, e) =>
             {
                 var msgBody = Encoding.UTF8.GetString(e.Body.ToArray());
+                var jsonBody = JsonDocument.Parse(msgBody).RootElement;
+                var studentName = "";
+                var studentId = "";
+                var courseId = "";
+                
+                if (jsonBody.TryGetProperty("StudentName", out var studentNameElement))
+                {
+                    studentName = studentNameElement.GetString();
+                }
+
+                if (jsonBody.TryGetProperty("StudentId", out var studentIdElement))
+                {
+                    studentId = studentIdElement.GetString();
+                }
+
+                if (jsonBody.TryGetProperty("CourseId", out var courseIdElement))
+                {
+                    courseId = courseIdElement.GetString();
+                }
+
+                var IsRegistrationSuccess = await _courseService.RegisterStudentForCourse(studentId, studentName, courseId);
+
+                if (IsRegistrationSuccess)
+                {
+                    
+                }
+                else
+                {
+                    
+                }
+                
+                
                 Console.WriteLine($"Message received =>{msgBody}");
             };
 
