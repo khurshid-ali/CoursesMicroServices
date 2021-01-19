@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoursesApi.BgWorkers;
 using CoursesApi.Entities;
 using CoursesApi.Services;
 using Microsoft.AspNetCore.Builder;
@@ -35,6 +36,11 @@ namespace CoursesApi
                 sp.GetRequiredService<IOptions<CoursesDatabaseSettings>>().Value
             );
 
+            services.Configure<RabbitMqConfiguration>(Configuration.GetSection(nameof(RabbitMqConfiguration)));
+            services.AddSingleton<IRabbitMqConfiguration>(sp =>
+                sp.GetRequiredService<IOptions<RabbitMqConfiguration>>().Value
+            );
+
             services.AddSingleton<ICourseService, CourseService>();
 
             services.AddControllers();
@@ -42,6 +48,8 @@ namespace CoursesApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoursesApi", Version = "v1" });
             });
+
+            services.AddHostedService<CoursesQueueConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
