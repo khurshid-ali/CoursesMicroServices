@@ -59,6 +59,8 @@ namespace StudentApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StudentApi", Version = "v1" });
             });
 
+            services.AddSingleton<IQueuePublisherService,QueuePublisherService>();
+
             services.AddHostedService<StudentQueueConsumer>();
         }
 

@@ -20,7 +20,7 @@ namespace StudentApi.Entities
         [BsonRepresentation(BsonType.DateTime)]
         public DateTime DateOfBirth { get; set; }
         
-        public List<RegisteredCourse> Courses { get; init; }
+        public List<RegisteredCourse> Courses { get; set; }
 
         public StudentEntity()
         {

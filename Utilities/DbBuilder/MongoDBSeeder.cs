@@ -43,6 +43,20 @@ namespace DbBuilder
                     MiddleName = "F",
                     LastName = "Doe",
                     DateOfBirth = GetDate("1983/06/12")
+                },
+                new StudentEntity
+                {
+                    FirstName = "Amy",
+                    MiddleName = "F",
+                    LastName = "Cooper",
+                    DateOfBirth = GetDate("1997/06/12")
+                },
+                new StudentEntity
+                {
+                    FirstName = "Tom",
+                    MiddleName = "M",
+                    LastName = "Adam",
+                    DateOfBirth = GetDate("1963/06/12")
                 }
             });
             Console.WriteLine("[OK]");

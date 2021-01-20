@@ -63,6 +63,13 @@ namespace Courses.Common
 
         }
         
+        
+        public void PublishMessage(string publishRoutingKey, string msgJson)
+        {
+            var message = Encoding.UTF8.GetBytes(msgJson);
+            Channel.BasicPublish(Exchange, publishRoutingKey, null, message );
+        }
+        
         // protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         // {
         //     var consumer = new AsyncEventingBasicConsumer(_channel);

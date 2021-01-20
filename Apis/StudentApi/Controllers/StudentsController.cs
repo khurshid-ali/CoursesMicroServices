@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json;
+using Courses.Common;
 using Microsoft.AspNetCore.Mvc;
 using StudentApi.Services;
 using StudentApi.Entities;
@@ -10,11 +12,13 @@ namespace StudentApi.Controllers
     public class StudentsController : ControllerBase
     {
 
+        private readonly IQueuePublisherService _publisher;
         public IStudentService StudentService { get; init; }
 
-        public StudentsController(IStudentService studentService)
+        public StudentsController(IStudentService studentService, IQueuePublisherService publisher)
         {
             StudentService = studentService;
+            _publisher = publisher;
         }
 
 
@@ -46,6 +50,28 @@ namespace StudentApi.Controllers
         {
             var student = StudentService.Get(studentId);
             if (student == null) return NotFound();
+            
+            //send message to Courses to verify 
+
+
+            var msg = new ServiceMessage
+            {
+                ReplyRoutingKey = "student.registration",
+                Body = "",
+                Parameters = new Dictionary<string, string>
+                {
+                    {"StudentId", studentId},
+                    {"StudentName", $"{student.FirstName}, {student.LastName}"},
+                    {"CourseId", courseCode}
+                }
+            };
+
+            var msgJsonString = JsonSerializer.Serialize(msg, new JsonSerializerOptions
+            {
+                Converters = { new ServiceMessageJsonConverter()}
+            });
+            
+            _publisher.PublishMessage("course.registration", msgJsonString);
 
             return student;
         }

@@ -15,7 +15,7 @@ namespace CoursesApi.Entities
         public int Capacity { get; set; }
         public int  Registered { get; set; }
         
-        public List<RegisteredStudent> Students { get; init; }
+        public List<RegisteredStudent> Students { get; set; }
 
         public CourseEntity()
         {

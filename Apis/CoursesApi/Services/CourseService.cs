@@ -55,7 +55,7 @@ namespace CoursesApi.Services
 
         public async Task<bool> RegisterStudentForCourse(string studentId, string studentName, string courseId)
         {
-            var course = (await _entities.FindAsync<CourseEntity>(course => course.Id == courseId)).FirstOrDefault();
+            var course = await GetAsync(courseId);
             if (course == null)
                 return false;
 
@@ -63,11 +63,18 @@ namespace CoursesApi.Services
 
             if (emptySpots > 0)
             {
+                if (course.Students == null)
+                {
+                    course.Students = new List<RegisteredStudent>();
+                }
+                
                 course.Students.Add(new RegisteredStudent
                 {
                     Id = studentId,
                     Name = studentName
                 });
+                course.Registered++;
+                await UpdateAsync(course.Id, course);
 
                 return true;
             }
