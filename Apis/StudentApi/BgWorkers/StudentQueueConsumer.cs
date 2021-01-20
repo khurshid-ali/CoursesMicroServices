@@ -6,63 +6,29 @@ using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using StudentApi.Entities;
+using Courses.Common;
 
 namespace StudentApi.BgWorkers
 {
-    public class StudentQueueConsumer : BackgroundService
+    public class StudentQueueConsumer : BaseQueueConsumerBackgroundService
     {
         
-        private readonly IRabbitMqConfiguration _rabbitMqConfig;
-        private ConnectionFactory _connectionFactory;
-        private IConnection _connection;
-        private IModel _channel;
-
-        public string Url => _rabbitMqConfig.Url;
-        public string Exchange => _rabbitMqConfig.Exchange;
-        public string QueueName => _rabbitMqConfig.QueueName;
-        public string RoutingKey => _rabbitMqConfig.RoutingKey;
         
-        public StudentQueueConsumer(IRabbitMqConfiguration rabbitConfig)
+        public StudentQueueConsumer(IRabbitMqConfiguration rabbitConfig):base(rabbitConfig)
         {
-            _rabbitMqConfig = rabbitConfig;
+           
         }
 
-        public override Task StartAsync(CancellationToken cancellationToken)
-        {
-            _connectionFactory = new ConnectionFactory
-            {
-                Uri = new Uri(Url)
-            };
-            _connection = _connectionFactory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(Exchange, ExchangeType.Topic );
-            _channel.QueueDeclare(QueueName,
-                true,
-                false,
-                false,
-                null);
-            
-            _channel.QueueBind(QueueName, Exchange, RoutingKey);
-            
-            return base.StartAsync(cancellationToken);
-        }
-
-        public override async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await base.StopAsync(cancellationToken);
-            _connection.Close();
-        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var consumer = new EventingBasicConsumer(_channel);
+            var consumer = new EventingBasicConsumer(Channel);
             consumer.Received += (sender, e) =>
             {
-                var msgBody = Encoding.UTF8.GetString(e.Body.ToArray());
-                Console.WriteLine($"Message received =>{msgBody}");
+                Console.WriteLine("message received");
             };
 
-            _channel.BasicConsume(QueueName, true, consumer);
+            Channel.BasicConsume(QueueName, true, consumer);
 
             await Task.CompletedTask;
         }

@@ -16,6 +16,7 @@ using StudentApi.BgWorkers;
 using StudentApi.Entities;
 using StudentApi.Services;
 using StudentApi.JsonConverters;
+using Courses.Common;
 
 namespace StudentApi
 {
